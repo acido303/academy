@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.js"></script>
+
+</head>
+<body>
+
+
+<div class="container">
+    <h1>My First Bootstrap Page</h1>
+    <p>This is some text.</p>
+</div>
+
+<table id="photos" class="display" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>Course ID</th>
+        <th>Course NAME</th>
+        <th></th>
+    </tr>
+    </thead>
+</table>
+
+
+<script>
+
+
+    function inittable(data) {
+        //console.log(data);
+        $('#photos').DataTable( {
+            "aaData": data
+        } );
+    }
+
+    var arrayReturn = [];
+    $.ajax({
+        url: "http://127.0.0.1:8080/rest/courses/",
+        async: true,
+        dataType: 'json',
+        crossDomain: true,
+        success: function (data) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                var desc = data[i].name;
+                arrayReturn.push([data[i].id,
+                    '<a>'+data[i].name+'</a>',
+                    desc.substring(0, 12)]
+                );
+            }
+            inittable(arrayReturn);
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+
+</script>
+
+</body>
+</html>

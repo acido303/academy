@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Courses Search</title>
+
+    <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+    <script type="text/javascript" src="https://code.angularjs.org/1.4.8/angular.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.js"></script>
+
+    <style id="compiled-css" type="text/css">
+
+        .searchbox {
+            margin: 25px;
+            padding: 10px;
+            border: 1px solid lightgray;
+        }
+
+        .constrained {
+            margin: 10px;
+            padding: 10px;
+            height: 800px;
+            overflow: auto;
+            border: 1px solid lightgray;
+        }
+
+        .selected{
+            background:black;
+            color:white;
+        }
+
+
+    </style>
+
+</head>
+<body ng-app="app">
+<div ng-controller="appController">
+
+
+
+
+    <div class="searchbox">
+
+
+    <form class="form-horizontal">
+        <fieldset>
+
+            <!-- Form Name -->
+            <legend>Search courses</legend>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput1">Course Name</label>
+                <div class="col-md-4">
+                    <input id="textinput1" name="textinput1" type="text" placeholder="Course Name" class="form-control input-md" data-ng-model="searchTermName">
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput2">City</label>
+                <div class="col-md-4">
+                    <input id="textinput2" name="textinput2" type="text" placeholder="City Name" class="form-control input-md" data-ng-model="searchTermCity">
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput3">Country</label>
+                <div class="col-md-4">
+                    <input id="textinput3" name="textinput3" type="text" placeholder="Country" class="form-control input-md" data-ng-model="searchTermCountry">
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput4">Price</label>
+                <div class="col-md-4">
+                    <input id="textinput4" name="textinput4" type="text" placeholder="Price" class="form-control input-md" data-ng-model="searchTermPrice">
+                </div>
+            </div>
+
+
+
+
+        </fieldset>
+    </form>
+
+
+    </div>
+
+
+
+    <div class="col-sm-5 min-padding" style="width:100%" height="10px">
+
+    <div class="constrained">
+
+
+        <table class="table table-striped" id="loggingTable" infinite-scroll="loadMore()" infinite-scroll-container='".constrained"' infinite-scroll-distance="1" infinite-scroll-parent="true">
+            <tr data-ng-show="logEventFilter.length === 0">
+                <td class="center" colspan="4">No courses found!</td>
+            </tr>
+
+            <tr data-ng-show="logEventFilter.length !== 0">
+                <th> # </th>
+                <th> Course name </th>
+                <td> School name </td>
+                <th> Price </th>
+                <th> City </th>
+                <th> Country </th>
+                <th> Address </th>
+                <th> # </th>
+
+            </tr>
+
+            <!--<tr data-ng-repeat="logEvent in logEventFilter = (logEvents | filter:searchTerm | limitTo:numberToDisplay) track by $index">-->
+            <tr data-ng-repeat="logEvent in logEventFilter = (logEvents | filter:{name: searchTermName, cityName:searchTermCity, countryName:searchTermCountry} | limitTo:numberToDisplay) track by $index">
+
+
+                <td> {{$index+1}} </td>
+                <td> {{logEvent.name}} </td>
+                <td>
+                    <img ng-src="http://127.0.0.1:8080/images/schools/{{logEvent.schoolImage}}" height="64px" title="{{logEvent.schoolName}}" />
+
+                </td>
+                <td> {{logEvent.price}} €/Week</td>
+                <td>
+                    {{logEvent.cityName}}
+                </td>
+                <td>
+                    <img ng-src="http://127.0.0.1:8080/images/flags/{{logEvent.countryImage}}" height="48px" alt="{{logEvent.countryName}}" style="border:1px solid black" />
+                </td>
+
+
+                <td> {{logEvent.schoolAddress}} </td>
+
+                <td>
+                    <img ng-src="http://127.0.0.1:8080/images/buttons/go.png" alt="" height="48px" />
+                </td>
+
+
+
+
+            </tr>
+
+
+        </table>
+    </div>
+
+</div>
+
+
+<!-- TODO: Missing CoffeeScript 2 -->
+
+<script type="text/javascript">
+    //<![CDATA[
+
+
+    var app = angular.module('app', ['infinite-scroll']).controller('appController', appController);
+
+    appController.$inject = ['$scope','$http','$window'];
+
+    function appController($scope,$http, $window) {
+
+        $scope.title = "This is only test!!!";
+        $scope.searchTerm = "";
+
+
+
+        $http.get('http://127.0.0.1:8080/rest/courses/').
+        then(function(response) {
+            $scope.logEvents = response.data;
+
+            $scope.numberToDisplay = response.data.length;
+        });
+
+        var table = document.getElementsByTagName("table")[0];
+        var tbody = table.getElementsByTagName("tbody")[0];
+        tbody.onclick = function (e) {
+            e = e || window.event;
+            var data = [];
+            var target = e.srcElement || e.target;
+            while (target && target.nodeName !== "TR") {
+                target = target.parentNode;
+            }
+            if (target) {
+                var cells = target.getElementsByTagName("td");
+                for (var i = 0; i < cells.length; i++) {
+                    data.push(cells[i].innerHTML);
+                }
+            }
+            alert(data);
+        };
+
+
+        /*
+        $scope.logEvents = [];
+        for (var i = 0; i < 1000; i++) {
+            $scope.logEvents.push({
+                name: "Hello, my name is " + i
+            });
+        }
+
+        $scope.loadMore = function() {
+            if ($scope.numberToDisplay + 5 < $scope.logEvents.length) {
+                $scope.numberToDisplay += 5;
+            } else {
+                $scope.numberToDisplay = $scope.logEvents.length;
+            }
+        };
+        */
+
+    };
+
+
+
+    //]]></script>
+
+<script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+        window.parent.parent.postMessage(["resultsFrame", {
+            height: document.body.getBoundingClientRect().height,
+            slug: "5emr5non"
+        }], "*")
+    }
+
+    // always overwrite window.name, in case users try to set it manually
+    window.name = "result"
+</script>
+</body>
+</html>
