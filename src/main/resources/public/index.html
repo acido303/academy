@@ -121,7 +121,7 @@
                 <td> {{$index+1}} </td>
                 <td> {{logEvent.name}} </td>
                 <td>
-                    <img ng-src="http://127.0.0.1:8080/images/schools/{{logEvent.schoolImage}}" height="64px" title="{{logEvent.schoolName}}" />
+                    <img ng-src="/images/schools/{{logEvent.schoolImage}}" height="64px" title="{{logEvent.schoolName}}" />
 
                 </td>
                 <td> {{logEvent.price}} €/Week</td>
@@ -129,14 +129,14 @@
                     {{logEvent.cityName}}
                 </td>
                 <td>
-                    <img ng-src="http://127.0.0.1:8080/images/flags/{{logEvent.countryImage}}" height="48px" alt="{{logEvent.countryName}}" style="border:1px solid black" />
+                    <img ng-src="/images/flags/{{logEvent.countryImage}}" height="48px" alt="{{logEvent.countryName}}" style="border:1px solid black" />
                 </td>
 
 
                 <td> {{logEvent.schoolAddress}} </td>
 
                 <td>
-                    <img ng-src="http://127.0.0.1:8080/images/buttons/go.png" alt="" height="48px" />
+                    <img ng-src="/images/buttons/go.png" alt="" height="48px" />
                 </td>
 
 
@@ -168,7 +168,7 @@
 
 
 
-        $http.get('http://127.0.0.1:8080/rest/courses/').
+        $http.get('/rest/courses/').
         then(function(response) {
             $scope.logEvents = response.data;
 
